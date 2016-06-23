@@ -9,7 +9,6 @@
     "openshift"
   ],
   "author": "cyrilpanicker@gmail.com",
-  "homepage": "http://www.openshift.com/",
   "repository": {
     "type": "git",
     "url": "https://github.com/openshift/origin-server"

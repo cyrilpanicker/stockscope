@@ -8,11 +8,7 @@
     "application",
     "openshift"
   ],
-  "author": {
-    "name": "OpenShift",
-    "email": "ramr@example.org",
-    "url": "http://www.openshift.com/"
-  },
+  "author": "cyrilpanicker@gmail.com",
   "homepage": "http://www.openshift.com/",
   "repository": {
     "type": "git",

@@ -42,7 +42,7 @@ export const getCandleData = ({stock,endDate}) => {
             } else if(!body.query || typeof body.query.count === 'undefined' || body.query.count === null){
                 reject('unexpected-error');
             } else if(body.query.count === 0){
-                resolve([]);
+                reject('zero-data');
             } else {
                 const data = body.query.results.quote.filter(datum => !!parseFloat(datum.Volume));
                 if(data.length < CANDLES_TO_FETCH){

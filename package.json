@@ -4,11 +4,13 @@
   "author": "cyrilpanicker@gmail.com",
   "main": "build/server/main.js",
   "scripts": {
-	  "remove:build:server":"rimraf ./build/server",
-	  "compile:server":"tsc ./source/server/* --outDir ./build/server",
-	  "build:server":"npm run remove:build:server && npm run compile:server",
-	  "postinstall": "npm run build:server",
-	  "start":"node ./build/server/main.js"
+    "remove:build:server": "rimraf ./build/server",
+    "remove:typings":"rimraf ./typings",
+    "install:typings":"npm run remove:typings && typings install",
+    "compile:server": "tsc --rootDir ./source/server --outDir ./build/server",
+    "build:server": "npm run remove:build:server && npm run compile:server",
+    "postinstall": "npm run install:typings && npm run build:server",
+    "start": "node ./build/server/main.js"
   },
   "devDependencies": {
     "concurrently": "^2.1.0",
@@ -17,5 +19,10 @@
     "rimraf": "^2.5.2",
     "typescript": "^1.8.10",
     "typings": "^1.3.0"
+  },
+  "dependencies": {
+    "express": "^4.14.0",
+    "moment": "^2.13.0",
+    "request": "^2.72.0"
   }
 }

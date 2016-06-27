@@ -24,6 +24,10 @@ export const connectToDb = () => {
     });
 };
 
+export const disconnectFromDb = () => {
+    DB.close();
+}
+
 export const getFromDb = (collection:string,pattern) => {
     return new Promise((resolve,reject) => {
         DB.collection(collection).find(pattern).toArray((error,result) => {

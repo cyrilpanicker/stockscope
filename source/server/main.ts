@@ -1,68 +1,63 @@
 import * as express from 'express';
-import {delay,readFile} from './util-services';
+import {delay,readFile,log} from './util-services';
 import {getCandleData} from './yahoo-service';
-import {connectToDb,getFromDb,insertIntoDb} from './db-service';
+import {connectToDb,disconnectFromDb,getFromDb,insertIntoDb} from './db-service';
 
 let stocksList = [];
 let stockPointer = 0;
 
-// readFile('./data/stocks-list.json').then(
-//     (data:string) => {
-//         stocksList = JSON.parse(data);
-//         processStocks();
-//     },
-//     error => {
-//         console.log('error-reading-stocks-list');
-//     }
-// );
 
-// const processStocks = () => {
-    
-//     getCandleData({
-//         stock:stocksList[stockPointer].symbol,
-//         endDate:new Date()
-//     }).then(
-//         (candles:any[]) => {
-//             console.log(candles.length);
-//             return delay(60000);
-//         },
-//         (error:string) => {
-//             console.log(error);
-//             return delay(60000);
-//         }
-//     ).then(
-//         () => {
-//             stockPointer++;
-//             if(stockPointer<stocksList.length){
-//                 processStocks();
-//             }
-//         }
-//     )
-    
-// };
 
-let i = 0;
-
-const process = () => {
-    insertIntoDb('test',{i}).then(
+(()=>{
+    connectToDb().then(
+        () => readFile('./data/stocks-list.json'),
+        error => Promise.reject(error)
+    ).then(
+        (data:string) => stocksList = JSON.parse(data),
+        error => Promise.reject(error)
+    ).then(
         () => {
-            console.log('inserted '+i);
-            return delay(5000);
+            log('processing started');
+            processStocks();
         },
         error => {
-            console.log(error);
-            return delay(5000);
+            if(error === 'file-read-error'){
+                disconnectFromDb();
+            }
+            log(error);
+        }
+    );
+})();
+
+
+
+const processStocks = () => {
+    getCandleData({
+        stock:stocksList[stockPointer].symbol,
+        endDate:new Date()
+    }).then(
+        (candles:any[]) => {},
+        error => {
+            log(stocksList[stockPointer].symbol+'" : '+error);
+            insertIntoDb('errors',{stock:stocksList[stockPointer].symbol,error})
         }
     ).then(
         () => {
-            i++;
-            process();
+            stockPointer++;
+            if(stockPointer < stocksList.length){
+                return delay(10000);
+            }else{
+                return delay(0);
+            }
+        }
+    ).then(
+        () => {
+            if(stockPointer < stocksList.length){
+                processStocks();
+            }else{
+                disconnectFromDb();
+                log('processing finished');
+            }
         }
     );
 };
-
-connectToDb().then(
-    process,
-    error => console.log(error)    
-);
-

@@ -2,7 +2,7 @@ import {Db,MongoClient} from 'mongodb';
 
 const HOST = 'localhost';
 const PORT = 27017;
-const DATABASE = 'stockscope';
+const DATABASE = 'ss';
 
 const CONNECTION_STRING = 'mongodb://<HOST>:<PORT>/<DATABASE>'
     .replace('<HOST>',HOST)

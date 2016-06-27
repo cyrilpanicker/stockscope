@@ -36,11 +36,14 @@ export const getCandleData = ({stock,endDate}) => {
         .replace('<START-DATE>',moment(endDate).subtract(START_DATE_OFFSET,'days').format('YYYY-MM-DD'));
 
     return new Promise((resolve,reject) => {
-        request({uri,qs:{env,format,q},json:true},(error:string, response, body) => {
+        request({uri,qs:{env,format,q},json:true},(error, response, body) => {
             if(error){
-                console.dir(error);
-                console.dir(JSON.stringify(error));
-                reject(error);
+                if(error.code === 'ECONNREFUSED'){
+                    reject('network-error');
+                }else{
+                    console.dir(error);
+                    reject(error);
+                }
             } else if(!body.query || typeof body.query.count === 'undefined' || body.query.count === null){
                 reject('unexpected-error');
             } else if(body.query.count === 0){

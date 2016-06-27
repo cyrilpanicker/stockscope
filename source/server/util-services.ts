@@ -1,7 +1,5 @@
 import * as fs from 'fs';
 
-export * from './yahooService';
-
 export const readFile = (file:string) => {
     return new Promise((resolve,reject) => {
         fs.readFile(file,(error,data) => {

@@ -10,7 +10,7 @@ let stockPointer = 0;
 
 (()=>{
     connectToDb().then(
-        () => readFile('./data/stocks-list.json'),
+        () => readFile('./data/stocks-list.test.json'),
         error => Promise.reject(error)
     ).then(
         (data:string) => stocksList = JSON.parse(data),

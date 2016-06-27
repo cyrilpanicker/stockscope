@@ -19,7 +19,13 @@ export const delay = (time:number) => {
     });
 };
 
-export const log = (message:string) => {
-    const stamp = moment(new Date()).format('MM/DD HH:mm')+' | ';
-    console.log(stamp+message);
+export const logMessage = (message:string) => {
+    const stamp = moment(new Date()).format('MM/DD HH:mm');
+    console.log(stamp+' | '+message);
+}
+
+export const logProcessMessage = ({id,stock,count,error}) => {
+    const stamp = moment(new Date()).format('MM/DD HH:mm');
+    const message = stamp+' | '+id+' | '+stock+' | '+count+' | '+error;
+    console.log(message);
 }

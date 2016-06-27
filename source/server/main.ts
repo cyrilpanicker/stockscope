@@ -1,5 +1,5 @@
 import * as express from 'express';
-import {delay,readFile,log} from './util-services';
+import {delay,readFile,logMessage,logProcessMessage} from './util-services';
 import {getCandleData} from './yahoo-service';
 
 let stocksList = [];
@@ -9,10 +9,10 @@ let stockPointer = 0;
 readFile('./data/stocks-list.json').then(
     (data:string) => {
         stocksList = JSON.parse(data);
-        log('processing started');
+        logMessage('processing started')
         processStocks();
     },
-    error => log(error)
+    error => logMessage(error)
 );
 
 const processStocks = () => {
@@ -21,18 +21,20 @@ const processStocks = () => {
         endDate:new Date()
     }).then(
         (candles:any[]) => {
-            log(
-                'pointer : '+stockPointer
-                +' | stock : '+stocksList[stockPointer].symbol
-                +' | count : '+candles.length
-            );
+            logProcessMessage({
+                id:stockPointer,
+                stock:stocksList[stockPointer].symbol,
+                count:candles.length,
+                error:null
+            });
         },
         error => {
-            log(
-                'pointer : '+stockPointer
-                +' | stock : '+stocksList[stockPointer].symbol
-                +' | error : '+error
-            );
+            logProcessMessage({
+                id:stockPointer,
+                stock:stocksList[stockPointer].symbol,
+                count:null,
+                error:error
+            });
         }
     ).then(
         () => {
@@ -48,7 +50,7 @@ const processStocks = () => {
             if(stockPointer < stocksList.length){
                 processStocks();
             }else{
-                log('processing finished');
+                logMessage('processing finished');
             }
         }
     )

@@ -8,5 +8,20 @@
     "name": "ABB India Ltd.",
     "industry": "INDUSTRIAL MANUFACTURING",
     "symbol": "ABB"
+  },
+  {
+    "name": "Bajaj Auto Ltd.",
+    "industry": "AUTOMOBILE",
+    "symbol": "BAJAJ-AUTO"
+  },
+  {
+    "name": "Castrol India Ltd.",
+    "industry": "ENERGY",
+    "symbol": "CASTROLIND"
+  },
+  {
+    "name": "Firstsource Solutions Ltd.",
+    "industry": "IT",
+    "symbol": "FSL"
   }
 ]

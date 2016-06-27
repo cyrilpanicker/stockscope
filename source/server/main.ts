@@ -1,51 +1,44 @@
 import * as express from 'express';
 import {delay,readFile,log} from './util-services';
 import {getCandleData} from './yahoo-service';
-import {connectToDb,disconnectFromDb,getFromDb,insertIntoDb} from './db-service';
 
 let stocksList = [];
 let stockPointer = 0;
 
 
-
-(()=>{
-    connectToDb().then(
-        () => readFile('./data/stocks-list.json'),
-        error => Promise.reject(error)
-    ).then(
-        (data:string) => stocksList = JSON.parse(data),
-        error => Promise.reject(error)
-    ).then(
-        () => {
-            log('processing started');
-            processStocks();
-        },
-        error => {
-            if(error === 'file-read-error'){
-                disconnectFromDb();
-            }
-            log(error);
-        }
-    );
-})();
-
-
+readFile('./data/stocks-list.json').then(
+    (data:string) => {
+        stocksList = JSON.parse(data);
+        log('processing started');
+        processStocks();
+    },
+    error => log(error)
+);
 
 const processStocks = () => {
     getCandleData({
         stock:stocksList[stockPointer].symbol,
         endDate:new Date()
     }).then(
-        (candles:any[]) => {},
+        (candles:any[]) => {
+            log(
+                'pointer : '+stockPointer
+                +' | stock : '+stocksList[stockPointer].symbol
+                +' | count : '+candles.length
+            );
+        },
         error => {
-            log(stocksList[stockPointer].symbol+'" : '+error);
-            insertIntoDb('errors',{stock:stocksList[stockPointer].symbol,error})
+            log(
+                'pointer : '+stockPointer
+                +' | stock : '+stocksList[stockPointer].symbol
+                +' | error : '+error
+            );
         }
     ).then(
         () => {
             stockPointer++;
             if(stockPointer < stocksList.length){
-                return delay(10000);
+                return delay(20000);
             }else{
                 return delay(0);
             }
@@ -55,9 +48,8 @@ const processStocks = () => {
             if(stockPointer < stocksList.length){
                 processStocks();
             }else{
-                disconnectFromDb();
                 log('processing finished');
             }
         }
-    );
+    )
 };

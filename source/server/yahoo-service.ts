@@ -38,11 +38,9 @@ export const getCandleData = ({stock,endDate}) => {
     return new Promise((resolve,reject) => {
         request({uri,qs:{env,format,q},json:true},(error:string, response, body) => {
             if(error){
-                if(error.indexOf('ECONNREFUSED') > -1){
-                    reject('network-error');
-                }else{
-                    reject(error);
-                }
+                console.dir(error);
+                console.dir(JSON.stringify(error));
+                reject(error);
             } else if(!body.query || typeof body.query.count === 'undefined' || body.query.count === null){
                 reject('unexpected-error');
             } else if(body.query.count === 0){

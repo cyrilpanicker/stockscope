@@ -20,6 +20,6 @@ export const delay = (time:number) => {
 };
 
 export const log = (message:string) => {
-    const stamp = moment(new Date()).format('MM/DD HH:mm')+' - ';
+    const stamp = moment(new Date()).format('MM/DD HH:mm')+' | ';
     console.log(stamp+message);
 }

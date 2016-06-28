@@ -1,47 +1,66 @@
 import * as moment from 'moment';
 import * as winston from 'winston';
+import {assign} from 'lodash';
+
+const mode = process.env.NODE_ENV;
 
 const timestamp = () => {
     return moment(new Date()).format('MM/DD HH:mm:ss');
 };
+
 const formatter = options => {
     return options.timestamp()+' | '+options.level.toUpperCase()+' | '+options.message;
 };
 
+const defaultLoggerTransportOptions = {
+    timestamp,
+    json:false,
+    formatter
+};
+
 const exceptionLogger = (()=>{
-    return new winston.Logger({
-        transports:[
-            new winston.transports.File({
-                filename:'./logs/exceptions.log',
-                timestamp,
-                handleExceptions:true,
-                humanReadableUnhandledException:true,
-                json:false,
-                formatter:options => {
-                    return options.timestamp()+' | '+options.level.toUpperCase()+' | '+options.meta.stack.join('\n');
-                }
-            })
-        ]
+    const transportOptions = assign({},defaultLoggerTransportOptions,{
+        filename:'./logs/exceptions.log',
+        handleExceptions:true,
+        humanReadableUnhandledException:true,
+        formatter:options => {
+            return options.timestamp()+' | '+options.level.toUpperCase()+' | '+options.meta.stack.join('\n');
+        }
     });
+    let loggerOptions  = null;
+    if(mode!=='PROD'){
+        loggerOptions = {transports:[new winston.transports.Console(transportOptions)]};
+    }else{
+        loggerOptions = {transports:[new winston.transports.File(transportOptions)]};
+    }
+    return new winston.Logger(loggerOptions);
 })();
 
 export const functionalLogger = (()=>{
-    return new winston.Logger({
-        transports:[
-            // new winston.transports.Console({timestamp,formatter})
-            new winston.transports.File({filename:'./logs/functional.log',timestamp,formatter,json:false})
-        ]
+    const transportOptions = assign({},defaultLoggerTransportOptions,{
+        filename:'./logs/functional.log'
     });
+    let loggerOptions = null;
+    if(mode!=='PROD'){
+        loggerOptions = {transports:[new winston.transports.Console(transportOptions)]};
+    }else{
+        loggerOptions = {transports:[new winston.transports.File(transportOptions)]};
+    }
+    return new winston.Logger(loggerOptions);
 })();
 
 
 const processLogger = (()=>{
-    return new winston.Logger({
-        transports:[
-            // new winston.transports.Console({timestamp,formatter})
-            new winston.transports.File({filename:'./logs/process.log',timestamp,formatter,json:false})
-        ]
+    const transportOptions = assign({},defaultLoggerTransportOptions,{
+        filename:'./logs/process.log'
     });
+    let loggerOptions = null;
+    if(mode!=='PROD'){
+        loggerOptions = {transports:[new winston.transports.Console(transportOptions)]};
+    }else{
+        loggerOptions = {transports:[new winston.transports.File(transportOptions)]};
+    }
+    return new winston.Logger(loggerOptions);
 })();
 
 export const logProcessedInfo = ({id,stock,count,lastDate,error,url}) => {

@@ -4,7 +4,7 @@
   "author": "cyrilpanicker@gmail.com",
   "main": "build/server/main.js",
   "scripts": {
-    "create:logs-directory":"mkdirp ./logs",
+    "create:logs-directory": "mkdirp ./logs",
     "remove:build:server": "rimraf ./build/server",
     "remove:typings": "rimraf ./typings",
     "install:typings": "npm run remove:typings && typings install",
@@ -16,11 +16,12 @@
   "devDependencies": {
     "rimraf": "^2.5.2",
     "typescript": "^1.8.10",
-    "typings": "^1.3.0"
+    "typings": "^1.3.0",
+    "mkdirp": "^0.5.1"
   },
   "dependencies": {
     "express": "^4.14.0",
-    "mkdirp": "^0.5.1",
+    "lodash": "^4.13.1",
     "moment": "^2.13.0",
     "mongodb": "^2.1.18",
     "request": "^2.72.0",

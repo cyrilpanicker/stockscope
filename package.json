@@ -4,12 +4,13 @@
   "author": "cyrilpanicker@gmail.com",
   "main": "build/server/main.js",
   "scripts": {
+    "create:logs-directory":"mkdirp ./logs",
     "remove:build:server": "rimraf ./build/server",
     "remove:typings": "rimraf ./typings",
     "install:typings": "npm run remove:typings && typings install",
     "compile:server": "tsc --rootDir ./source/server --outDir ./build/server",
     "build:server": "npm run remove:build:server && npm run compile:server",
-    "postinstall": "npm run install:typings && npm run build:server",
+    "postinstall": "npm run install:typings && npm run build:server && npm run create:logs-directory",
     "start": "node ./build/server/main.js"
   },
   "devDependencies": {
@@ -19,8 +20,10 @@
   },
   "dependencies": {
     "express": "^4.14.0",
+    "mkdirp": "^0.5.1",
     "moment": "^2.13.0",
     "mongodb": "^2.1.18",
-    "request": "^2.72.0"
+    "request": "^2.72.0",
+    "winston": "^2.2.0"
   }
 }

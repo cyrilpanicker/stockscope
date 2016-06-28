@@ -23,5 +23,20 @@
     "name": "Firstsource Solutions Ltd.",
     "industry": "IT",
     "symbol": "FSL"
+  },
+  {
+    "name": "Welspun India Ltd.",
+    "industry": "TEXTILES",
+    "symbol": "WELSPUNIND"
+  },
+  {
+    "name": "Pipavav Defence and Offshore Engineering Company Ltd.",
+    "industry": "INDUSTRIAL MANUFACTURING",
+    "symbol": "PIPAVAVDOC"
+  },
+  {
+    "name": "Kewal Kiran Clothing Ltd.",
+    "industry": "TEXTILES",
+    "symbol": "KKCL"
   }
 ]

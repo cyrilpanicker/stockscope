@@ -1,12 +1,12 @@
 import * as express from 'express';
-import {delay,readFile,logMessage,logProcessMessage} from './util-services';
-import {getCandleData} from './yahoo-service';
+import {delay,readFile} from './util-services';
+import {logMessage,logProcessMessage} from './logging-service';
+import {getCandleData,getCandleDataUrl} from './yahoo-service';
 
 let stocksList = [];
 let stockPointer = 0;
 
-
-readFile('./data/stocks-list.json').then(
+readFile('./data/stocks-list.test.json').then(
     (data:string) => {
         stocksList = JSON.parse(data);
         logMessage('processing started')
@@ -16,6 +16,7 @@ readFile('./data/stocks-list.json').then(
 );
 
 const processStocks = () => {
+    const url = getCandleDataUrl({stock:stocksList[stockPointer].symbol,endDate:new Date()});
     getCandleData({
         stock:stocksList[stockPointer].symbol,
         endDate:new Date()
@@ -25,7 +26,8 @@ const processStocks = () => {
                 id:stockPointer,
                 stock:stocksList[stockPointer].symbol,
                 count:candles.length,
-                error:null
+                error:null,
+                url
             });
         },
         error => {
@@ -33,7 +35,8 @@ const processStocks = () => {
                 id:stockPointer,
                 stock:stocksList[stockPointer].symbol,
                 count:null,
-                error:error
+                error:error,
+                url
             });
         }
     ).then(

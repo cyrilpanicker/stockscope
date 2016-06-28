@@ -60,3 +60,12 @@ export const getCandleData = ({stock,endDate}) => {
     });
 
 };
+
+export const getCandleDataUrl = ({stock,endDate}) => {
+    const q = query
+        .replace('<STOCK>',stock)
+        .replace('<END-DATE>',moment(endDate).format('YYYY-MM-DD'))
+        .replace('<START-DATE>',moment(endDate).subtract(START_DATE_OFFSET,'days').format('YYYY-MM-DD'));
+    return uri+'?env='+env+'&format='+format+'&q='+encodeURIComponent(q);
+
+}; 

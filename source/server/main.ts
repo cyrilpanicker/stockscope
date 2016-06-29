@@ -1,5 +1,4 @@
-import * as express from 'express';
-import {assign} from 'lodash'; 
+import {assign} from 'lodash';
 import {delay,readFile} from './util-services';
 import {functionalLogger,logProcessedInfo} from './logging-service';
 import {getCandleData,getCandleDataUrl} from './yahoo-service';

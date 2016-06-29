@@ -4,20 +4,35 @@
   "author": "cyrilpanicker@gmail.com",
   "main": "build/server/main.js",
   "scripts": {
-    "create:logs-directory": "mkdirp ./logs",
+    "create:logs-dir": "mkdirp ./logs",
+    "remove:typings:server": "rimraf ./source/server/typings",
+    "remove:typings:client": "rimraf ./source/client/typings",
+    "install:typings:server": "npm run remove:typings:server && cd ./source/server && typings install",
+    "install:typings:client": "npm run remove:typings:client && cd ./source/client && typings install",
+    "install:typings": "concurrently \"npm run install:typings:server\" \"npm run install:typings:client\"",
     "remove:build:server": "rimraf ./build/server",
-    "remove:typings": "rimraf ./typings",
-    "install:typings": "npm run remove:typings && typings install",
-    "compile:server": "tsc --rootDir ./source/server --outDir ./build/server",
-    "build:server": "npm run remove:build:server && npm run compile:server",
-    "postinstall": "npm run install:typings && npm run build:server && npm run create:logs-directory",
-    "start": "node ./build/server/main.js"
+    "remove:build:client": "concurrently \"rimraf ./build/client\" \"rimraf ./build/client-bundled\"",
+    "remove:build": "rimraf ./build",
+    "compile:ts:server": "tsc --rootDir ./source/server --outDir ./build/server --project ./source/server",
+    "compile:ts:client": "tsc --rootDir ./source/client --outDir ./build/client --project ./source/client",
+    "copy:templates": "mkdirp ./build/client/templates && ncp ./source/client/templates ./build/client/templates",
+    "bundle":"webpack",
+    "build:server": "npm run remove:build:server && npm run compile:ts:server",
+    "build:client": "npm run remove:build:client && concurrently \"npm run compile:ts:client\" \"npm run copy:templates\" && npm run bundle",
+    "build": "npm run remove:build && concurrently \"npm run build:client\" \"npm run build:server\"",
+    "postinstall": "npm run install:typings && concurrently \"npm run build\" \"npm run create:logs-dir\"",
+    "start": "node ./build/server/main.js",
+    "start:web": "node ./build/server/web-server.js"
   },
   "devDependencies": {
+    "concurrently": "^2.1.0",
+    "html-webpack-plugin": "^2.21.0",
+    "mkdirp": "^0.5.1",
+    "ncp": "^2.0.0",
     "rimraf": "^2.5.2",
     "typescript": "^1.8.10",
     "typings": "^1.3.0",
-    "mkdirp": "^0.5.1"
+    "webpack": "^1.13.1"
   },
   "dependencies": {
     "express": "^4.14.0",

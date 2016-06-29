@@ -23,21 +23,23 @@ readFile(stocksListFile).then(
 const processStocks = () => {
     const stock = stocksList[stockPointer].symbol;
     const currentDate = new Date();
-    const url = getCandleDataUrl({stock,endDate:currentDate});
-    const logParameters = {id:stockPointer,stock,url};
+    const yql_url = getCandleDataUrl({stock,endDate:currentDate});
+    const logParameters = {id:stockPointer,stock,yql_url};
     getCandleData({stock,endDate:currentDate}).then(
         (candles:any[]) => {
             logProcessedInfo(<any>assign({},logParameters,{
                 count:candles.length,
                 lastDate:candles[candles.length-1].date,
-                error:null
+                error:null,
+                ss_url:'http://163.172.131.187:6106?stock='+stock
             }));
         },
         error => {
             logProcessedInfo(<any>assign({},logParameters,{
                 count:null,
                 lastDate:null,
-                error
+                error,
+                ss_url:null
             }));
         }
     ).then(

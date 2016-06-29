@@ -2,7 +2,9 @@ import * as $ from 'jquery';
 import * as d3 from 'd3';
 import {Chart} from './models';
 
-$.ajax({url:'/api?'+location.hash.substring(1)}).then(
+$('body').addClass('loading');
+
+$.ajax({url:'/api'+location.search}).then(
     data => {
 
         const candles:any[] = data.candles.slice(-180);
@@ -30,6 +32,8 @@ $.ajax({url:'/api?'+location.hash.substring(1)}).then(
         });
 
         chart.plotCandles(candles,'price-chart',0);
+        
+        $('body').removeClass('loading');
 
     },
     error => console.log(error)

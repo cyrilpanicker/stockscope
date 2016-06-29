@@ -13,7 +13,7 @@ app.get('/api',(request,response) => {
         endDate:new Date()
     }).then(
         candles => response.send({candles}),
-        error => response.status(500).send(error)
+        error => response.status(500).send({error})
     );
 });
 

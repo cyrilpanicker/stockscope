@@ -12,7 +12,7 @@ app.get('/api',(request,response) => {
         stock:request.query.stock,
         endDate:new Date()
     }).then(
-        candles => response.send(candles),
+        candles => response.send({candles}),
         error => response.status(500).send(error)
     );
 });

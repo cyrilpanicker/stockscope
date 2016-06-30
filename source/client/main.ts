@@ -1,37 +1,42 @@
 import * as $ from 'jquery';
 import * as d3 from 'd3';
 import {Chart} from './models';
+import {
+    SVG_WIDTH,
+    SVG_HEIGHT,
+    PADDING,
+    CHART_WIDTH,
+    CANDLE_WIDTH_FACTOR,
+    SLAB_TYPES
+} from '../commons/constants';
 
 $('body').addClass('loading');
 
 $.ajax({url:'/api'+location.search}).then(
     data => {
 
+        const {apiUrl,slabs,type,name} = data;
+
+        console.log('api-url : '+apiUrl);
+
         const candles:any[] = data.candles.slice(-180);
-        const width = 1333;
-        const height = 700;
-        const padding = {left:10,right:60};
-        const chartWidth = width - padding.left - padding.right;
-        const candleWidth = 0.6 * chartWidth/candles.length;
 
         const chart = new Chart({
             svg : d3.select('#chart').append('svg'),
-            width,height,padding,
-            dateArray:candles.map(candle => candle.date),
-            slabs:[{
-                height:300,
-                minValue:d3.min(candles.map(candle => candle.low)),
-                maxValue:d3.max(candles.map(candle => candle.high)),
-                padding:{top:30,bottom:0}
-            },{
-                height:100,
-                minValue:d3.min(candles.map(candle => candle.volume)),
-                maxValue:d3.max(candles.map(candle => candle.volume)),
-                padding:{top:10,bottom:0}
-            }]
+            width:SVG_WIDTH,
+            height:SVG_HEIGHT,
+            padding:PADDING,
+            slabs,
+            dateArray:candles.map(candle => candle.date)
         });
 
-        chart.plotCandles(candles,'price-chart',0);
+        slabs.forEach((slab,slabIndex) => {
+            switch(slab.type){
+                case SLAB_TYPES.CANDLE:chart.plotCandles(candles,slab.name,slabIndex);
+            }
+        });
+
+        // chart.plotCandles(candles,'price-chart',0);
         
         $('body').removeClass('loading');
 

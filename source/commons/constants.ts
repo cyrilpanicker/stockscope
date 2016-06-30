@@ -1,6 +1,5 @@
 export const PORT = 6106;
 export const SVG_WIDTH = 1333;
-export const SVG_HEIGHT = 700;
 export const PADDING = {left:10,right:60};
 export const VALUE_WIDTH_FACTOR = 0.6;
 export const VALUE_AXIS_TICKS = 10;

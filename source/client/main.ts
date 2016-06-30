@@ -5,7 +5,6 @@ import './styles/main';
 import {Chart} from './models';
 import {
     SVG_WIDTH,
-    SVG_HEIGHT,
     PADDING,
     VALUE_WIDTH_FACTOR,
     SLAB_TYPES,
@@ -21,17 +20,20 @@ $.getJSON('/api'+location.search).then(
 
         console.log('api-url : '+apiUrl);
 
+        const slabs = [{
+            height:PRICE_SLAB.height,
+            padding:PRICE_SLAB.padding,
+            minValue:d3.min(candles.map(candle => candle.low)),
+            maxValue:d3.max(candles.map(candle => candle.high))
+        }];
+
+        const height = d3.sum(slabs.map(slab => slab.height));
+
         const chart = new Chart({
             svg : d3.select('#chart').append('svg'),
             width:SVG_WIDTH,
             padding:PADDING,
-            height:SVG_HEIGHT,
-            slabs:[{
-                height:PRICE_SLAB.height,
-                padding:PRICE_SLAB.padding,
-                minValue:d3.min(candles.map(candle => candle.low)),
-                maxValue:d3.max(candles.map(candle => candle.high))
-            }],
+            slabs,height,
             valueWidthFactor:VALUE_WIDTH_FACTOR,
             dateArray:candles.map(candle => candle.date)
         });

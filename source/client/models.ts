@@ -26,6 +26,7 @@ interface ChartConfig{
     padding:ChartPadding;
     slabs:Slab[];
     dateArray:string[];
+    valueWidthFactor:number;
 }
 
 export interface ValuePlotData{
@@ -46,13 +47,14 @@ export class Chart{
     private height:number;
     private chartWidth:number;
     private padding:ChartPadding;
+    private valueWidthFactor:number
     private dateScale:d3.scale.Ordinal<string,number>;
     private valueScales:d3.scale.Linear<number,number>[];
     private slabs:Slab[];
     private crossHair:d3.Selection<any>;
     private mouseMoveHandler:(date:string)=>void;
 
-    constructor({svg,width,height,padding,slabs,dateArray}:ChartConfig){
+    constructor({svg,width,height,padding,slabs,dateArray,valueWidthFactor}:ChartConfig){
         this.svg = svg;
         this.width = width;
         this.height = height;
@@ -61,6 +63,7 @@ export class Chart{
         this.padding = padding;
         this.valueScales = [];
         this.slabs = slabs;
+        this.valueWidthFactor = valueWidthFactor;
         var slabBase = 0;
         for(var i=0;i<slabs.length;i++){
             slabBase += slabs[i].height;
@@ -176,9 +179,9 @@ export class Chart{
     
     plotCandles(candles:any[],className:string,slabIndex:number){
 
-        const {svg,dateScale,valueScales,chartWidth} = this;
+        const {svg,dateScale,valueScales,chartWidth,valueWidthFactor} = this;
         const valueScale = valueScales[slabIndex];
-        const candleWidth = 0.6 * chartWidth / candles.length;
+        const candleWidth = valueWidthFactor * chartWidth / candles.length;
         svg.selectAll(className).remove();
         const element = svg.append('g').attr('class',className);
         

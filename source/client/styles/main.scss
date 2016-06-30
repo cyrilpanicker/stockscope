@@ -1,0 +1,19 @@
+%axis-line{
+    fill: none;
+    stroke: black;
+}
+
+%axis-labels{
+    font-size:10px;
+}
+
+
+[class$='-axis']{
+    line,path{@extend %axis-line;}
+    text{@extend %axis-labels;}
+}
+
+.cross-hair{
+    fill: none;
+    stroke: steelblue;
+}

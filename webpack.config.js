@@ -15,11 +15,11 @@ module.exports = {
         'source-map'
     ],
     resolve:{
-        extensions:['','.js']
+        extensions:['','.js','.css']
     },
     module:{
         loaders:[
-            // {test:/\.css$/,loader:'style-loader!css-loader'}
+            {test:/\.css$/,loader:'style-loader!css-loader'}
         ]
     },
     plugins:[

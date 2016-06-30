@@ -1,7 +1,7 @@
 import {assign} from 'lodash';
-import {delay,readFile} from './util-services';
-import {functionalLogger,logProcessedInfo} from './logging-service';
-import {getCandleData,getCandleDataUrl} from './yahoo-service';
+import {delay,readFile} from './services/util-services';
+import {functionalLogger,logProcessedInfo} from './services/logging-service';
+import {getCandleData,getCandleDataUrl} from './services/yahoo-service';
 
 let stocksList = [];
 let stockPointer = 0;

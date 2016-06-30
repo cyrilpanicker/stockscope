@@ -1,19 +1,20 @@
 import * as express from 'express';
-import {functionalLogger} from './logging-service';
-import {getCandleData} from './yahoo-service';
+import {functionalLogger} from './services/logging-service';
+import {getCandleData} from './services/yahoo-service';
 
 const PORT = 6106;
 const app = express();
 
-app.use(express.static('./build/client-bundled'));
+app.use(express.static('./build/client-public'));
 
 app.get('/api',(request,response) => {
+    const date = request.query.date ? new Date(request.query.date) : new Date();
     getCandleData({
-        stock:request.query.stock,
-        endDate:new Date()
+        stock: request.query.stock,
+        endDate: date
     }).then(
         candles => response.send({candles}),
-        error => response.status(500).send({error})
+        error => response.status(500).send(error)
     );
 });
 

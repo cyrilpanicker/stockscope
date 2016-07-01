@@ -9,7 +9,7 @@ export const PRICE_SLAB = {
 };
 export const VOLUME_SLAB = {
     height:100,
-    padding:{top:10,bottom:0}
+    padding:{top:0,bottom:0}
 };
 export const SLAB_TYPES = {
     CANDLE:'candle',

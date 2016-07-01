@@ -50,6 +50,7 @@ export class Chart{
     private valueWidthFactor:number
     private dateScale:d3.scale.Ordinal<string,number>;
     private valueScales:d3.scale.Linear<number,number>[];
+    private translateValues:number[];
     private slabs:Slab[];
     private crossHair:d3.Selection<any>;
     private mouseMoveHandler:(date:string)=>void;
@@ -62,15 +63,16 @@ export class Chart{
         this.chartWidth = width - padding.left - padding.right;
         this.padding = padding;
         this.valueScales = [];
+        this.translateValues = [];
         this.slabs = slabs;
         this.valueWidthFactor = valueWidthFactor;
-        var slabBase = 0;
+        let aggregateHeight = 0;
         for(var i=0;i<slabs.length;i++){
-            slabBase += slabs[i].height;
+            aggregateHeight += slabs[i].height;
             this.valueScales[i] = d3.scale.linear()
                 .domain([slabs[i].minValue, slabs[i].maxValue])
-                .range([slabBase - slabs[i].padding.bottom, slabBase - slabs[i].height + slabs[i].padding.top]);
-            
+                .range([slabs[i].height - slabs[i].padding.bottom, slabs[i].padding.top]);
+            this.translateValues[i] = aggregateHeight - slabs[i].height;
         }
         this.dateScale = d3.scale.ordinal<string,number>().domain(dateArray)
             .rangePoints([padding.left,width-padding.right]);
@@ -134,16 +136,13 @@ export class Chart{
     plotInfo(text:string,className:string,slabIndex:number){
         const {svg,width,padding,slabs} = this;
         let textElement;
-        const offset = d3.sum(
-            slabs
-                .filter((slab,index)=>index<slabIndex)
-                .map(slab => slab.height)
-        );
         if(svg.select('.'+className).empty()){
-            textElement = svg.append('g').attr('class',className).append('text')
+            textElement = svg.append('g').attr('class',className)
+                .attr('transform','translate(0,'+this.translateValues[slabIndex]+')')
+                .append('text')
                 .attr('font-size',10)
                 .attr('x',width-padding.right)
-                .attr('y',offset+slabs[slabIndex].padding.top)
+                .attr('y',slabs[slabIndex].padding.top)
                 .attr('text-anchor','end');
         } else{
             textElement = svg.select('.'+className+' text');
@@ -165,11 +164,11 @@ export class Chart{
     plotValueAxis(className:string,ticks:number,slabIndex:number){
         const {svg,valueScales} = this;
         const valueScale = valueScales[slabIndex];
-        const translate = this.padding.left + this.chartWidth + 10;
+        const xTranslate = this.padding.left + this.chartWidth + 10;
         svg.selectAll(className).remove();
         const element = svg.append('g')
             .attr('class',className)
-            .attr('transform','translate('+translate+',0)');
+            .attr('transform','translate('+xTranslate+','+this.translateValues[slabIndex]+')');
         const valueAxis = d3.svg.axis()
             .scale(valueScale)
             .orient('right')
@@ -183,7 +182,10 @@ export class Chart{
         const valueScale = valueScales[slabIndex];
         const candleWidth = valueWidthFactor * chartWidth / candles.length;
         svg.selectAll(className).remove();
-        const element = svg.append('g').attr('class',className);
+
+        const element = svg.append('g')
+            .attr('class',className)
+            .attr('transform','translate(0,'+this.translateValues[slabIndex]+')');
         
         const candleStems = element.selectAll('line.candle-stem').data(candles);
         candleStems.exit().remove();
@@ -213,7 +215,9 @@ export class Chart{
         const {svg,dateScale,valueScales} = this;
         const valueScale = valueScales[slabIndex];
         svg.selectAll(className).remove();
-        const element = svg.append('g').attr('class',className);
+        const element = svg.append('g')
+            .attr('class',className)
+            .attr('transform','translate(0,'+this.translateValues[slabIndex]+')');
         
         const pathGenerator = d3.svg.line().interpolate('linear');
         
@@ -238,10 +242,10 @@ export class Chart{
         const {svg,chartWidth,dateScale,valueScales,slabs} = this;
         const valueScale = valueScales[slabIndex];
         const barWidth = 0.6 * chartWidth / bars.length;
-        let slabBase = 0;
-        for(var i=0;i<=slabIndex;i++){slabBase += slabs[i].height;}
         svg.selectAll(className).remove();
-        const element = svg.append('g').attr('class',className);
+        const element = svg.append('g')
+            .attr('class',className)
+            .attr('transform','translate(0,'+this.translateValues[slabIndex]+')');
         const barSet = element.selectAll('.bar').data(bars);
         const min = d3.min(bars.map(bar=>bar.value));
         const max = d3.max(bars.map(bar=>bar.value));
@@ -256,7 +260,7 @@ export class Chart{
             .attr('x',datum => dateScale(datum.date)-0.5*barWidth)
             .attr('y',datum => valueScale(datum.value))
             .attr('width',barWidth)
-            .attr('height',datum => slabBase - slabs[slabIndex].padding.bottom - valueScale(datum.value))
+            .attr('height',datum => slabs[slabIndex].height - slabs[slabIndex].padding.bottom - valueScale(datum.value))
             .attr('stroke',datum=>colorScale(datum.value))
             .attr('fill',datum=>colorScale(datum.value));
     }

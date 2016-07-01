@@ -25,7 +25,19 @@ $.getJSON('/api'+location.search).then(
             padding:PRICE_SLAB.padding,
             minValue:d3.min(candles.map(candle => candle.low)),
             maxValue:d3.max(candles.map(candle => candle.high))
+        },{
+            height:110,
+            minValue:d3.min(candles.map(candle => candle.volume)),
+            maxValue:d3.max(candles.map(candle => candle.volume)),
+            padding:{top:10,bottom:10}
         }];
+
+// {
+//             height:100,
+//             minValue:d3.min(candles.map(candle => candle.volume)),
+//             maxValue:d3.max(candles.map(candle => candle.volume)),
+//             padding:{top:10,bottom:0}
+//         }
 
         const height = d3.sum(slabs.map(slab => slab.height));
 
@@ -39,8 +51,24 @@ $.getJSON('/api'+location.search).then(
         });
 
         chart.plotDateAxis('date-axis');
+
+
         chart.plotValueAxis('price-axis',VALUE_AXIS_TICKS,0);
         chart.plotCandles(candles,'price-chart',0);
+
+        chart.plotValueAxis('volume-axis',5,1);
+        chart.plotBars(candles.map(candle => {
+            return {date:candle.date,value:candle.volume};
+        }),'volume-chart',1);
+
+        chart.plotCurve(candles.map(candle => {
+            return {date:candle.date,value:candle.high};
+        }),'high','red',0);
+
+        chart.plotCurve(candles.map(candle => {
+            return {date:candle.date,value:candle.low};
+        }),'low','blue',0);
+
         chart.onMouseMove(date => {
             const candle = candles.filter(candle => candle.date===date)[0];
             const ohlcText = 'OPEN : '+candle.open+
@@ -48,6 +76,7 @@ $.getJSON('/api'+location.search).then(
                 ', LOW : '+candle.low+
                 ', CLOSE : '+candle.close;
             chart.plotInfo(ohlcText,'price-info',0);
+            chart.plotInfo('VOLUME : '+candle.volume,'volume-info',1);
         });
 
         chart.plotCrossHair();

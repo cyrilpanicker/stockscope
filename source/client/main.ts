@@ -61,13 +61,13 @@ $.getJSON('/api'+location.search).then(
             return {date:candle.date,value:candle.volume};
         }),'volume-chart',1);
 
-        chart.plotCurve(candles.map(candle => {
-            return {date:candle.date,value:candle.high};
-        }),'high','red',0);
+        // chart.plotCurve(candles.map(candle => {
+        //     return {date:candle.date,value:candle.high};
+        // }),'high','red',0);
 
-        chart.plotCurve(candles.map(candle => {
-            return {date:candle.date,value:candle.low};
-        }),'low','blue',0);
+        // chart.plotCurve(candles.map(candle => {
+        //     return {date:candle.date,value:candle.low};
+        // }),'low','blue',0);
 
         chart.onMouseMove(date => {
             const candle = candles.filter(candle => candle.date===date)[0];

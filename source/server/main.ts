@@ -1,7 +1,8 @@
 import {assign} from 'lodash';
 import {delay,readFile} from './services/util-services';
 import {functionalLogger,logProcessedInfo} from './services/logging-service';
-import {getCandleData,getCandleDataUrl} from './services/yahoo-service';
+import * as yahoo from './services/yahoo-service';
+import * as nse from './services/nse-service';
 
 let stocksList = [];
 let stockPointer = 0;
@@ -21,17 +22,34 @@ readFile(stocksListFile).then(
 );
 
 const processStocks = () => {
+    
     const stock = stocksList[stockPointer].symbol;
     const currentDate = new Date();
-    const yql_url = getCandleDataUrl({stock,endDate:currentDate});
-    const logParameters = {id:stockPointer,stock,yql_url};
-    getCandleData({stock,endDate:currentDate}).then(
-        (candles:any[]) => {
+    const yql_url = yahoo.getCandleDataUrl({stock,endDate:currentDate});
+    const nse_url = nse.getCandleDataUrl({stock});
+    const logParameters = {id:stockPointer,stock,yql_url,nse_url};
+    let latestPrice;
+    let candles;
+    
+    const yahooCall = yahoo.getCandleData({stock,endDate:currentDate}).then(
+        _candles => candles =_candles,
+        error => Promise.reject(error)
+    );
+    const nseCall = nse.getCandleData({stock}).then(
+        (candle:any) => latestPrice = candle.close,
+        error => latestPrice = null
+    );
+    
+    const promise = Promise.all([yahooCall,nseCall]);
+    
+    promise.then(
+        () => {
             logProcessedInfo(<any>assign({},logParameters,{
                 count:candles.length,
                 lastDate:candles[candles.length-1].date,
                 error:null,
-                ss_url:'http://163.172.131.187:6106?stock='+stock
+                ss_url:'http://163.172.131.187:6106?stock='+stock,
+                latestPrice
             }));
         },
         error => {
@@ -39,7 +57,8 @@ const processStocks = () => {
                 count:null,
                 lastDate:null,
                 error,
-                ss_url:null
+                ss_url:null,
+                latestPrice
             }));
         }
     ).then(

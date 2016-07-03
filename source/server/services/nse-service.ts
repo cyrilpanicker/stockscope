@@ -15,15 +15,19 @@ export const getCandleData = ({stock}) => {
                 reject('unexpected-error');
             }else{
                 const data = JSON.parse(body.match(/({"futLink".*"optLink".*)/)[1]).data[0];
-                resolve({
-                    symbol:data.symbol,
-                    date:moment(new Date(data.secDate)).format('YYYY-MM-DD'),
-                    open:parseFloat(data.open.replace(/,/g,'')),
-                    high:parseFloat(data.dayHigh.replace(/,/g,'')),
-                    low:parseFloat(data.dayLow.replace(/,/g,'')),
-                    close:parseFloat(data.closePrice.replace(/,/g,'')),
-                    volume:parseFloat(data.totalTradedVolume.replace(/,/g,''))
-                });
+                if(!data){
+                    reject('nse-no-data');
+                }else{
+                    resolve({
+                        symbol:data.symbol,
+                        date:moment(new Date(data.secDate)).format('YYYY-MM-DD'),
+                        open:parseFloat(data.open.replace(/,/g,'')),
+                        high:parseFloat(data.dayHigh.replace(/,/g,'')),
+                        low:parseFloat(data.dayLow.replace(/,/g,'')),
+                        close:parseFloat(data.closePrice.replace(/,/g,'')),
+                        volume:parseFloat(data.totalTradedVolume.replace(/,/g,''))
+                    });
+                }
             }
         });
     });

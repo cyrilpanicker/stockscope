@@ -1,6 +1,5 @@
 import * as request from 'request';
 import * as moment from 'moment';
-import {functionalLogger} from './logging-service';
 
 const uri = 'https://www.nseindia.com/live_market/dynaContent/live_watch/get_quote/GetQuote.jsp';
 const headers = {
@@ -12,19 +11,21 @@ export const getCandleData = ({stock}) => {
     return new Promise((resolve,reject) => { 
         request({uri,qs:{symbol:stock},headers},(error,reponse,body) => {
             if(error){
-                reject('unexpected-error');
+                reject('nse-unexpected-error');
             }else{
-                const data = JSON.parse(body.match(/({"futLink".*"optLink".*)/)[1]).data[0];
+                const reponseObject = JSON.parse(body.match(/({"futLink".*"optLink".*)/)[1]);
+                const date = moment(new Date(reponseObject.tradedDate)).format('YYYY-MM-DD');
+                const data = reponseObject.data[0];
                 if(!data){
-                    reject('nse-no-data');
+                    reject('nse-zero-data');
                 }else{
                     resolve({
                         symbol:data.symbol,
-                        date:moment(new Date(data.secDate)).format('YYYY-MM-DD'),
+                        date,
                         open:parseFloat(data.open.replace(/,/g,'')),
                         high:parseFloat(data.dayHigh.replace(/,/g,'')),
                         low:parseFloat(data.dayLow.replace(/,/g,'')),
-                        close:parseFloat(data.closePrice.replace(/,/g,'')),
+                        close:parseFloat(data.closePrice.replace(/,/g,'')) || parseFloat(data.lastPrice.replace(/,/g,'')),
                         volume:parseFloat(data.totalTradedVolume.replace(/,/g,''))
                     });
                 }

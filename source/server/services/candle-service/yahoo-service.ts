@@ -39,19 +39,19 @@ export const getCandleData = ({stock,endDate}) => {
         request({uri,qs:{env,format,q},json:true},(error, response, body) => {
             if(error){
                 if(error.code === 'ECONNREFUSED'){
-                    reject('network-error');
+                    reject('yahoo-network-error');
                 }else{
                     console.dir(error);
-                    reject(error);
+                    reject('yahoo-unexpected-error');
                 }
             } else if(!body.query || typeof body.query.count === 'undefined' || body.query.count === null){
-                reject('unexpected-error');
+                reject('yahoo-unexpected-error');
             } else if(body.query.count === 0){
-                reject('zero-data');
+                reject('yahoo-zero-data');
             } else {
                 const data = body.query.results.quote.filter(datum => !!parseFloat(datum.Volume));
                 if(data.length < CANDLES_TO_FETCH){
-                    reject('insufficient-data');
+                    reject('yahoo-insufficient-data');
                 } else {
                     resolve(data.map(datum => transformCandleData(datum)).reverse());
                 }

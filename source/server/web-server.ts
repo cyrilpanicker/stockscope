@@ -10,6 +10,10 @@ app.use(express.static('./build/client-public'));
 
 app.get('/api',(request,response) => {
     const stock = request.query.stock;
+    if(!stock){
+        response.status(409).send('missing-stock');
+        return;
+    }
     const endDate = request.query.date ? new Date(request.query.date) : new Date();
     const apiUrls = {
         nse:getNseUrl({stock}),
@@ -24,7 +28,7 @@ app.get('/api',(request,response) => {
                 indicators:[]
             });
         },
-        error => response.status(500).send({error})
+        error => response.status(500).send(error)
     );
 });
 

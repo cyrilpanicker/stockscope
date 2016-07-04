@@ -84,5 +84,9 @@ $.getJSON('/api'+location.search).then(
         
         $('body').removeClass('loading');
     },
-    error => console.log(error)
+    error => {
+        console.log(error);
+        $('#chart').text(error.responseText);
+        $('body').removeClass('loading');
+    }
 );

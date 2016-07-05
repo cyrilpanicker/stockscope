@@ -1,7 +1,8 @@
 import {assign} from 'lodash';
 import {delay,readFile} from './services/util-services';
 import {functionalLogger,logProcessedInfo} from './services/logging-service';
-import {getCandles,getNseUrl,getYahooUrl} from './services/candle-service';
+import {getCandles,getCandlesUrl as getQuandlUrl} from './services/quandl-service';
+import {getCandleDataUrl as getNseUrl} from './services/nse-service';
 
 let stocksList = [];
 let stockPointer = 0;
@@ -24,16 +25,16 @@ const processStocks = () => {
     
     const stock = stocksList[stockPointer].symbol;
     const currentDate = new Date();
-    const yql_url = getYahooUrl({stock,endDate:currentDate});
+    const quandl_url = getQuandlUrl({stock,endDate:currentDate});
     const nse_url = getNseUrl({stock});
-    const logParameters = {id:stockPointer,stock,yql_url,nse_url};
+    const logParameters = {id:stockPointer,stock,quandl_url,nse_url};
     
     getCandles({stock,endDate:currentDate}).then(
-        candles => logProcessedInfo(<any>assign({},logParameters,{
+        (candles:any[]) => logProcessedInfo(<any>assign({},logParameters,{
             count:candles.length,
             lastDate:candles[candles.length-1].date,
             error:null,
-            ss_url:'http://163.172.131.187:6106?stock='+stock,
+            ss_url:'http://163.172.131.187:6106?stock='+stock.replace(/-/g,'_').replace(/&/g,''),
             price:candles[candles.length-1].close
         })),
         error => logProcessedInfo(<any>assign({},logParameters,{
@@ -47,7 +48,7 @@ const processStocks = () => {
         () => {
             stockPointer++;
             if(stockPointer < stocksList.length){
-                return delay(20000);
+                return delay(5000);
             }else{
                 return delay(0);
             }

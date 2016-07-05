@@ -20,7 +20,7 @@ export const getCandleData = ({stock}) => {
                     reject('nse-zero-data');
                 }else{
                     resolve({
-                        symbol:data.symbol,
+                        symbol:stock,
                         date,
                         open:parseFloat(data.open.replace(/,/g,'')),
                         high:parseFloat(data.dayHigh.replace(/,/g,'')),
@@ -35,5 +35,12 @@ export const getCandleData = ({stock}) => {
 };
 
 export const getCandleDataUrl = ({stock}) => {
-    return uri+'?symbol='+stock;
+    return uri+'?symbol='+encodeURIComponent(stock);
 }; 
+
+// getCandleData({stock:'M&M'}).then(
+//     candles => console.log(candles),
+//     error => console.log(error)
+// );
+
+// console.log(getCandleDataUrl({stock:'M&M'}));

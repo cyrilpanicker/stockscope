@@ -63,6 +63,6 @@ const processLogger = (()=>{
     return new winston.Logger(loggerOptions);
 })();
 
-export const logProcessedInfo = ({id,stock,count,lastDate,price,error,ss_url,yql_url,nse_url}) => {
-    processLogger.info(id+' | '+stock+' | '+count+' | '+lastDate+' | '+price+' | '+error+' | \n'+ss_url+' | \n'+nse_url+' | \n'+yql_url);
+export const logProcessedInfo = ({id,stock,count,lastDate,price,error,ss_url,quandl_url,nse_url}) => {
+    processLogger.info(id+' | '+stock+' | '+count+' | '+lastDate+' | '+price+' | '+error+' | \n'+ss_url+' | \n'+nse_url+' | \n'+quandl_url);
 };

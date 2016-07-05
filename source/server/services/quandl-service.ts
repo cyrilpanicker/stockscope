@@ -40,16 +40,16 @@ export const getCandles = ({stock,endDate}) => {
         },(error, response, body) => {
             if(error){
                 console.dir(error);
-                reject('unexpected-error');
+                reject('quandl-unexpected-error');
             } else if(body.quandl_error){
-                reject('stock-invalid');
+                reject('quandl-stock-invalid');
             } else if(!body.dataset || !body.dataset.data) {
-                reject('data-not-foud');
+                reject('quandl-data-not-foud');
             } else if(body.dataset.data.length < CANDLES_TO_FETCH){
-                reject('insufficient-data');
+                reject('quandl-insufficient-data');
             } else{
                 if(body.dataset.data.some(datum => !datum[6])){
-                    reject('zero-volume-candle-found');
+                    reject('quandl-zero-volume-candle-found');
                 } else {
                     resolve(
                         body.dataset.data

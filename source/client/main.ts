@@ -16,10 +16,9 @@ $('body').addClass('loading');
 
 $.getJSON('/api'+location.search).then(
     data => {
-        const {apiUrls,candles} = data;
+        const {apiUrl,candles} = data;
 
-        console.log(apiUrls.nse);
-        console.log(apiUrls.yahoo);
+        console.log(apiUrl);
 
         const slabs = [{
             height:PRICE_SLAB.height,

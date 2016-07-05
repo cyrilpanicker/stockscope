@@ -1,7 +1,7 @@
 import * as express from 'express';
 import * as d3 from 'd3';
 import {functionalLogger} from './services/logging-service';
-import {getCandles,getNseUrl,getYahooUrl} from './services/candle-service';
+import {getCandles,getCandlesUrl} from './services/quandl-service';
 import {PORT} from '../commons/constants'; 
 
 const app = express();
@@ -11,19 +11,16 @@ app.use(express.static('./build/client-public'));
 app.get('/api',(request,response) => {
     const stock = request.query.stock;
     if(!stock){
-        response.status(409).send('missing-stock');
+        response.status(409).send('web-missing-stock');
         return;
     }
     const endDate = request.query.date ? new Date(request.query.date) : new Date();
-    const apiUrls = {
-        nse:getNseUrl({stock}),
-        yahoo:getYahooUrl({stock,endDate})
-    };
+    const apiUrl = getCandlesUrl({stock,endDate});
     getCandles({stock,endDate}).then(
         (candles:any[]) => {
             candles = candles.slice(-180);
             response.send({
-                apiUrls,
+                apiUrl,
                 candles,
                 indicators:[]
             });

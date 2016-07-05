@@ -34,7 +34,7 @@ const processStocks = () => {
             count:candles.length,
             lastDate:candles[candles.length-1].date,
             error:null,
-            ss_url:'http://163.172.131.187:6106?stock='+stock.replace(/-/g,'_').replace(/&/g,''),
+            ss_url:'http://163.172.131.187:6106?stock='+encodeURIComponent(stock),
             price:candles[candles.length-1].close
         })),
         error => logProcessedInfo(<any>assign({},logParameters,{

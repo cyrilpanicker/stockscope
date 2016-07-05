@@ -25,7 +25,7 @@ const transformCandleData = (symbol) => {
     };
 };
 
-export const getCandleData = ({stock,endDate}) => {
+export const getCandles = ({stock,endDate}) => {
     const quandlStock = stock.replace(/-/g,'_').replace(/&/g,'');
     return new Promise((resolve,reject) => {
         request({
@@ -62,7 +62,17 @@ export const getCandleData = ({stock,endDate}) => {
     });
 };
 
-// getCandleData({
+export const getCandlesUrl = ({stock,endDate}) => {
+    const quandlStock = stock.replace(/-/g,'_').replace(/&/g,'');
+    return URI.replace('<STOCK>',quandlStock)+
+        '?limit='+CANDLES_TO_FETCH+
+        '&api_key='+API_KEY+
+        '&end_date='+moment(endDate).format('YYYY-MM-DD');
+};
+
+// console.log(getCandlesUrl({stock:'M&M',endDate:new Date()}));
+
+// getCandles({
 //     stock:'RELIANCE',
 //     endDate:new Date()
 // }).then(

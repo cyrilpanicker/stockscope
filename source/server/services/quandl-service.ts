@@ -8,6 +8,7 @@ const MA1 = 8;
 const MA2 = 21;
 const MA3 = 55;
 const CANDLES_TO_FETCH = CANDLES_TO_DISPLAY + MA3 - 1;
+const CANDLES_TO_FETCH_WITH_OFFSET = CANDLES_TO_FETCH * 1.5;
 //const START_DATE_OFFSET = CANDLES_TO_FETCH * 1.5;
     
 const transformCandleData = (symbol) => {
@@ -31,10 +32,9 @@ export const getCandles = ({stock,endDate}) => {
         request({
             uri:URI.replace('<STOCK>',quandlStock),
             qs:{
-                'limit':CANDLES_TO_FETCH,
+                'limit':CANDLES_TO_FETCH_WITH_OFFSET,
                 'api_key':API_KEY,
                 'end_date':moment(endDate).format('YYYY-MM-DD')
-                //,'start_date':moment(endDate).subtract(START_DATE_OFFSET,'days').format('YYYY-MM-DD')
             },
             json:true
         },(error, response, body) => {

@@ -12,19 +12,31 @@ import {
     PRICE_SLAB
 } from '../commons/constants';
 
+import {atr} from '../commons/atr';
+
 $('body').addClass('loading');
 
 $.getJSON('/api'+location.search).then(
     data => {
-        const {apiUrl,candles} = data;
+        const {apiUrl} = data;
+        let {candles} = data;
 
         console.log(apiUrl);
+        
+        let atrData = atr(candles,14);
+        candles = candles.slice(-180);
+        atrData = atrData.slice(-180);
 
         const slabs = [{
             height:PRICE_SLAB.height,
             padding:PRICE_SLAB.padding,
             minValue:d3.min(candles.map(candle => candle.low)),
             maxValue:d3.max(candles.map(candle => candle.high))
+        },{
+            height:110,
+            minValue:d3.min(atrData.filter(atrDatum => atrDatum.value!==null).map(atrDatum => atrDatum.value)),
+            maxValue:d3.max(atrData.filter(atrDatum => atrDatum.value!==null).map(atrDatum => atrDatum.value)),
+            padding:{top:10,bottom:10}
         },{
             height:110,
             minValue:d3.min(candles.map(candle => candle.volume)),
@@ -55,11 +67,14 @@ $.getJSON('/api'+location.search).then(
 
         chart.plotValueAxis('price-axis',VALUE_AXIS_TICKS,0);
         chart.plotCandles(candles,'price-chart',0);
+        
+        chart.plotValueAxis('atr-axis',5,1);
+        chart.plotCurve(atrData,'atr','blue',1);
 
-        chart.plotValueAxis('volume-axis',5,1);
+        chart.plotValueAxis('volume-axis',5,2);
         chart.plotBars(candles.map(candle => {
             return {date:candle.date,value:candle.volume};
-        }),'volume-chart',1);
+        }),'volume-chart',2);
 
         // chart.plotCurve(candles.map(candle => {
         //     return {date:candle.date,value:candle.high};
@@ -76,7 +91,8 @@ $.getJSON('/api'+location.search).then(
                 ', LOW : '+candle.low+
                 ', CLOSE : '+candle.close;
             chart.plotInfo(ohlcText,'price-info',0);
-            chart.plotInfo('VOLUME : '+candle.volume,'volume-info',1);
+            chart.plotInfo('ATR : '+atrData.find(atrDatum => atrDatum.date==date).value,'atr-info',1);
+            chart.plotInfo('VOLUME : '+candle.volume,'volume-info',2);
         });
 
         chart.plotCrossHair();

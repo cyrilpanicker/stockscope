@@ -18,7 +18,7 @@ app.get('/api',(request,response) => {
     const apiUrl = getCandlesUrl({stock,endDate});
     getCandles({stock,endDate}).then(
         (candles:any[]) => {
-            candles = candles.slice(-180);
+            // candles = candles.slice(-180);
             response.send({
                 apiUrl,
                 candles,

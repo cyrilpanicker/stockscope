@@ -8,7 +8,7 @@ const MA1 = 8;
 const MA2 = 21;
 const MA3 = 55;
 const CANDLES_TO_FETCH = CANDLES_TO_DISPLAY + MA3 - 1;
-const CANDLES_TO_FETCH_WITH_OFFSET = CANDLES_TO_FETCH * 1.5;
+const CANDLES_TO_FETCH_WITH_OFFSET = CANDLES_TO_FETCH * 2;
 //const START_DATE_OFFSET = CANDLES_TO_FETCH * 1.5;
     
 const transformCandleData = (symbol) => {

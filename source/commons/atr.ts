@@ -1,7 +1,6 @@
 import * as d3 from 'd3';
-import {Candle} from './models';
+import {Candle,DateValue} from './models';
 import {avg,ema} from './averages';
-import {DateValue} from './models';
 
 export const trueRange = (candles:Candle[]) => {
     const result:DateValue[] = [];

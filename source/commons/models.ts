@@ -1,11 +1,11 @@
 export interface Candle{
     date:string;
-    symbol:string;
+    symbol?:string;
     open:number;
     high:number;
     low:number;
     close:number;
-    volume:number;
+    volume?:number;
 }
 
 export interface DateValue{

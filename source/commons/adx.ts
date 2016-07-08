@@ -1,4 +1,6 @@
 import {Candle,DateValue} from './models';
+import {trueRange} from './atr';
+import {sum} from './smoothen';
 
 export const dmPlus = (candles:Candle[]) => {
     const result:DateValue[] = [];
@@ -14,7 +16,7 @@ export const dmPlus = (candles:Candle[]) => {
                 if(highDiff < lowDiff){
                     resultNode.value = 0
                 }else{
-                    resultNode.value = highDiff
+                    resultNode.value = highDiff;
                 }
             }
         }
@@ -46,41 +48,73 @@ export const dmMinus = (candles:Candle[]) => {
     return result;
 };
 
-// const data = [
-//     {date:'1',high:30.20,low:29.41,close:29.87,open:null},
-//     {date:'2',high:30.28,low:29.32,close:30.24,open:null},
-//     {date:'3',high:30.45,low:29.96,close:30.10,open:null},
-//     {date:'4',high:29.35,low:28.74,close:28.90,open:null},
-//     {date:'5',high:29.35,low:28.56,close:28.92,open:null},
-//     {date:'6',high:29.29,low:28.41,close:28.48,open:null},
-//     {date:'7',high:28.83,low:28.08,close:28.56,open:null},
-//     {date:'8',high:28.73,low:27.43,close:27.56,open:null},
-//     {date:'9',high:28.67,low:27.66,close:28.47,open:null},
-//     {date:'10',high:28.85,low:27.83,close:28.28,open:null},
-//     {date:'11',high:28.64,low:27.40,close:27.49,open:null},
-//     {date:'12',high:27.68,low:27.09,close:27.23,open:null},
-//     {date:'13',high:27.21,low:26.18,close:26.35,open:null},
-//     {date:'14',high:26.87,low:26.13,close:26.33,open:null},
-//     {date:'15',high:27.41,low:26.63,close:27.03,open:null},
-//     {date:'16',high:26.94,low:26.13,close:26.22,open:null},
-//     {date:'17',high:26.52,low:25.43,close:26.01,open:null},
-//     {date:'18',high:26.52,low:25.35,close:25.46,open:null},
-//     {date:'19',high:27.09,low:25.88,close:27.03,open:null},
-//     {date:'20',high:27.69,low:26.96,close:27.45,open:null},
-//     {date:'21',high:28.45,low:27.14,close:28.36,open:null},
-//     {date:'22',high:28.53,low:28.01,close:28.43,open:null},
-//     {date:'23',high:28.67,low:27.88,close:27.95,open:null},
-//     {date:'24',high:29.01,low:27.99,close:29.01,open:null},
-//     {date:'25',high:29.87,low:28.76,close:29.38,open:null},
-//     {date:'26',high:29.80,low:29.14,close:29.36,open:null},
-//     {date:'27',high:29.75,low:28.71,close:28.91,open:null},
-//     {date:'28',high:30.65,low:28.93,close:30.61,open:null},
-//     {date:'29',high:30.60,low:30.03,close:30.05,open:null},
-//     {date:'30',high:30.76,low:29.39,close:30.19,open:null}
-// ];
-// const dmPlusData = dmPlus(data);
-// const dmMinusData = dmMinus(data);
+export const diPlus = (candles:Candle[],period:number) => {
+    const result:DateValue[] = [];
+    const smoothDmPlus = sum(dmPlus(candles).slice(1),period);
+    smoothDmPlus.unshift({date:candles[0].date,value:null});
+    const smoothTrueRange = sum(trueRange(candles).slice(1),period)
+    smoothTrueRange.unshift({date:candles[0].date,value:null});
+    for(let i=0;i<candles.length;i++){
+        const resultNode:DateValue = {date:candles[i].date,value:null};
+        if(smoothTrueRange[i].value!==null && smoothDmPlus[i].value!==null){
+            resultNode.value = smoothDmPlus[i].value/smoothTrueRange[i].value*100;
+        }
+        result.push(resultNode);
+    }
+    return result;
+};
 
-// dmPlusData.forEach((datum,index) => {
-//     console.log(datum.date+' '+datum.value+' '+dmMinusData[index].value);
-// });
+export const diMinus = (candles:Candle[],period:number) => {
+    const result:DateValue[] = [];
+    const smoothDmMinus = sum(dmMinus(candles).slice(1),period);
+    smoothDmMinus.unshift({date:candles[0].date,value:null});
+    const smoothTrueRange = sum(trueRange(candles).slice(1),period)
+    smoothTrueRange.unshift({date:candles[0].date,value:null});
+    for(let i=0;i<candles.length;i++){
+        const resultNode:DateValue = {date:candles[i].date,value:null};
+        if(smoothTrueRange[i].value!==null && smoothDmMinus[i].value!==null){
+            resultNode.value = smoothDmMinus[i].value/smoothTrueRange[i].value*100;
+        }
+        result.push(resultNode);
+    }
+    return result;
+};
+
+const data = [
+    {date:'1',high:30.1983,low:29.4072,close:29.8720,open:null},
+    {date:'2',high:30.2776,low:29.3182,close:30.2381,open:null},
+    {date:'3',high:30.4458,low:29.9611,close:30.0996,open:null},
+    {date:'4',high:29.3478,low:28.7443,close:28.9028,open:null},
+    {date:'5',high:29.3477,low:28.5566,close:28.9225,open:null},
+    {date:'6',high:29.2886,low:28.4081,close:28.4775,open:null},
+    {date:'7',high:28.8334,low:28.0818,close:28.5566,open:null},
+    {date:'8',high:28.7346,low:27.4289,close:27.5576,open:null},
+    {date:'9',high:28.6654,low:27.6565,close:28.4675,open:null},
+    {date:'10',high:28.8532,low:27.8345,close:28.2796,open:null},
+    {date:'11',high:28.6356,low:27.3992,close:27.4882,open:null},
+    {date:'12',high:27.6761,low:27.0927,close:27.2310,open:null},
+    {date:'13',high:27.2112,low:26.1826,close:26.3507,open:null},
+    {date:'14',high:26.8651,low:26.1332,close:26.3309,open:null},
+    {date:'15',high:27.4090,low:26.6277,close:27.0333,open:null},
+    {date:'16',high:26.9441,low:26.1332,close:26.2221,open:null},
+    {date:'17',high:26.5189,low:25.4307,close:26.0144,open:null},
+    {date:'18',high:26.5189,low:25.3518,close:25.4605,open:null},
+    {date:'19',high:27.0927,low:25.8760,close:27.0333,open:null},
+    {date:'20',high:27.6860,low:26.9640,close:27.4487,open:null},
+    {date:'21',high:28.4477,low:27.1421,close:28.3586,open:null},
+    {date:'22',high:28.5267,low:28.0123,close:28.4278,open:null},
+    {date:'23',high:28.6654,low:27.8840,close:27.9530,open:null},
+    {date:'24',high:29.0116,low:27.9928,close:29.0116,open:null},
+    {date:'25',high:29.8720,low:28.7643,close:29.3776,open:null},
+    {date:'26',high:29.8028,low:29.1402,close:29.3576,open:null},
+    {date:'27',high:29.7529,low:28.7127,close:28.9107,open:null},
+    {date:'28',high:30.6546,low:28.9290,close:30.6149,open:null},
+    {date:'29',high:30.5951,low:30.0304,close:30.0502,open:null},
+    {date:'30',high:30.7635,low:29.3863,close:30.1890,open:null}
+];
+
+
+// console.log(dmPlus(data));
+// console.log(dmMinus(data));
+// console.log(diPlus(data,14));
+// console.log(diMinus(data,14));

@@ -13,6 +13,7 @@ import {
 } from '../commons/constants';
 
 import {atr} from '../commons/atr';
+import {diPlus,diMinus} from '../commons/adx';
 
 $('body').addClass('loading');
 
@@ -24,8 +25,12 @@ $.getJSON('/api'+location.search).then(
         console.log(apiUrl);
         
         let atrData = atr(candles,14);
+        let diPlusData = diPlus(candles,14);
+        let diMinusData = diMinus(candles,14);
         candles = candles.slice(-180);
         atrData = atrData.slice(-180);
+        diPlusData = diPlusData.slice(-180);
+        diMinusData = diMinusData.slice(-180);
 
         const slabs = [{
             height:PRICE_SLAB.height,
@@ -36,6 +41,11 @@ $.getJSON('/api'+location.search).then(
             height:110,
             minValue:d3.min(atrData.filter(atrDatum => atrDatum.value!==null).map(atrDatum => atrDatum.value)),
             maxValue:d3.max(atrData.filter(atrDatum => atrDatum.value!==null).map(atrDatum => atrDatum.value)),
+            padding:{top:10,bottom:10}
+        },{
+            height:110,
+            minValue:d3.min(diPlusData.map(datum => datum.value).concat(diMinusData.map(datum => datum.value))),
+            maxValue:d3.max(diPlusData.map(datum => datum.value).concat(diMinusData.map(datum => datum.value))),
             padding:{top:10,bottom:10}
         },{
             height:110,
@@ -70,11 +80,15 @@ $.getJSON('/api'+location.search).then(
         
         chart.plotValueAxis('atr-axis',5,1);
         chart.plotCurve(atrData,'atr','blue',1);
+        
+        chart.plotValueAxis('di-axis',5,2);
+        chart.plotCurve(diPlusData,'diPlus','blue',2);
+        chart.plotCurve(diMinusData,'diMinus','red',2);
 
-        chart.plotValueAxis('volume-axis',5,2);
+        chart.plotValueAxis('volume-axis',5,3);
         chart.plotBars(candles.map(candle => {
             return {date:candle.date,value:candle.volume};
-        }),'volume-chart',2);
+        }),'volume-chart',3);
 
         // chart.plotCurve(candles.map(candle => {
         //     return {date:candle.date,value:candle.high};
@@ -92,7 +106,9 @@ $.getJSON('/api'+location.search).then(
                 ', CLOSE : '+candle.close;
             chart.plotInfo(ohlcText,'price-info',0);
             chart.plotInfo('ATR : '+atrData.find(atrDatum => atrDatum.date==date).value,'atr-info',1);
-            chart.plotInfo('VOLUME : '+candle.volume,'volume-info',2);
+            chart.plotInfo('+DI : '+diPlusData.find(datum => datum.date==date).value
+                +', -DI : '+diMinusData.find(datum => datum.date==date).value,'di-info',2);
+            chart.plotInfo('VOLUME : '+candle.volume,'volume-info',3);
         });
 
         chart.plotCrossHair();

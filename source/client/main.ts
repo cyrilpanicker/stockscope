@@ -13,7 +13,7 @@ import {
 } from '../commons/constants';
 
 import {atr} from '../commons/atr';
-import {diPlus,diMinus} from '../commons/adx';
+import {diPlus,diMinus,adx} from '../commons/adx';
 
 $('body').addClass('loading');
 
@@ -27,10 +27,12 @@ $.getJSON('/api'+location.search).then(
         let atrData = atr(candles,14);
         let diPlusData = diPlus(candles,14);
         let diMinusData = diMinus(candles,14);
+        let adxData = adx(candles,14);
         candles = candles.slice(-180);
         atrData = atrData.slice(-180);
         diPlusData = diPlusData.slice(-180);
         diMinusData = diMinusData.slice(-180);
+        adxData = adxData.slice(-180);
 
         const slabs = [{
             height:PRICE_SLAB.height,
@@ -44,8 +46,8 @@ $.getJSON('/api'+location.search).then(
             padding:{top:10,bottom:10}
         },{
             height:110,
-            minValue:d3.min(diPlusData.map(datum => datum.value).concat(diMinusData.map(datum => datum.value))),
-            maxValue:d3.max(diPlusData.map(datum => datum.value).concat(diMinusData.map(datum => datum.value))),
+            minValue:d3.min(diPlusData.map(datum => datum.value).concat(diMinusData.map(datum => datum.value)).concat(adxData.map(datum=>datum.value))),
+            maxValue:d3.max(diPlusData.map(datum => datum.value).concat(diMinusData.map(datum => datum.value)).concat(adxData.map(datum=>datum.value))),
             padding:{top:10,bottom:10}
         },{
             height:110,
@@ -84,6 +86,8 @@ $.getJSON('/api'+location.search).then(
         chart.plotValueAxis('di-axis',5,2);
         chart.plotCurve(diPlusData,'diPlus','blue',2);
         chart.plotCurve(diMinusData,'diMinus','red',2);
+        chart.plotCurve(adxData,'adx','black',2);
+        chart.plotCurve(adxData,'adx','black',2);
 
         chart.plotValueAxis('volume-axis',5,3);
         chart.plotBars(candles.map(candle => {
@@ -106,7 +110,7 @@ $.getJSON('/api'+location.search).then(
                 ', CLOSE : '+candle.close;
             chart.plotInfo(ohlcText,'price-info',0);
             chart.plotInfo('ATR : '+atrData.find(atrDatum => atrDatum.date==date).value,'atr-info',1);
-            chart.plotInfo('+DI : '+diPlusData.find(datum => datum.date==date).value
+            chart.plotInfo('ADX : '+adxData.find(datum=>datum.date==date).value+', +DI : '+diPlusData.find(datum => datum.date==date).value
                 +', -DI : '+diMinusData.find(datum => datum.date==date).value,'di-info',2);
             chart.plotInfo('VOLUME : '+candle.volume,'volume-info',3);
         });

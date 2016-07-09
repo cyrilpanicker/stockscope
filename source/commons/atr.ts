@@ -1,6 +1,6 @@
 import * as d3 from 'd3';
 import {Candle,DateValue} from './models';
-import {avg,ema} from './averages';
+import {avg} from './smoothen';
 
 export const trueRange = (candles:Candle[]) => {
     const result:DateValue[] = [];
@@ -19,26 +19,8 @@ export const trueRange = (candles:Candle[]) => {
 };
 
 export const atr = (candles:Candle[],period:number) => {
-    const result:DateValue[] = [];
-    const trueRangeData = trueRange(candles);
-    candles.forEach((candle,index)=>{
-        const resultNode:DateValue = {
-            date:candle.date,
-            value:null
-        };
-        if(index === period-1){
-            resultNode.value = avg(trueRangeData.slice(0,period).map(datum => datum.value));
-        }else if(index > period-1){
-            const previousAtr = result[index-1].value;
-            resultNode.value = (previousAtr*(period-1)+trueRangeData[index].value)/14;
-        }
-        result.push(resultNode);
-    });
-    return result;
+    return avg(trueRange(candles),period);
 };
-
-
-
 
 // const candles = [
 //     {high:48.70,low:47.79,close:48.16,open:0,date:'1',symbol:'',volume:0},
@@ -75,6 +57,6 @@ export const atr = (candles:Candle[],period:number) => {
 // const trueRangeData = trueRange(candles);
 // const atrData = atr(candles,14);
 
-// trueRangeData.forEach((datum,index) => {
-//     console.log(datum.date+'  '+datum.value+'  '+atrData[index].value);
+// candles.forEach((candle,index)=>{
+//     console.log(candle.date+' , '+trueRangeData[index].value+' , '+atrData[index].value);
 // });

@@ -7,6 +7,10 @@ export const PRICE_SLAB = {
     height:300,
     padding:{top:30,bottom:0}
 };
+export const ADX_SLAB = {
+    height:200,
+    padding:{top:10,bottom:0}
+};
 export const VOLUME_SLAB = {
     height:100,
     padding:{top:0,bottom:0}

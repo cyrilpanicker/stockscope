@@ -12,3 +12,13 @@ export interface DateValue{
     date:string;
     value:number;
 }
+
+export interface Point{
+    x:number;
+    y:number;
+}
+
+export interface Line{
+    slope:number,
+    intercept:number
+}

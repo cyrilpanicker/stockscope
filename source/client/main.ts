@@ -9,7 +9,8 @@ import {
     VALUE_WIDTH_FACTOR,
     SLAB_TYPES,
     VALUE_AXIS_TICKS,
-    PRICE_SLAB
+    PRICE_SLAB,
+    ADX_SLAB
 } from '../commons/constants';
 
 import {atr} from '../commons/atr';
@@ -40,28 +41,11 @@ $.getJSON('/api'+location.search).then(
             minValue:d3.min(candles.map(candle => candle.low)),
             maxValue:d3.max(candles.map(candle => candle.high))
         },{
-            height:110,
-            minValue:d3.min(atrData.filter(atrDatum => atrDatum.value!==null).map(atrDatum => atrDatum.value)),
-            maxValue:d3.max(atrData.filter(atrDatum => atrDatum.value!==null).map(atrDatum => atrDatum.value)),
-            padding:{top:10,bottom:10}
-        },{
-            height:110,
+            height:ADX_SLAB.height,
+            padding:ADX_SLAB.padding,
             minValue:d3.min(diPlusData.map(datum => datum.value).concat(diMinusData.map(datum => datum.value)).concat(adxData.map(datum=>datum.value))),
-            maxValue:d3.max(diPlusData.map(datum => datum.value).concat(diMinusData.map(datum => datum.value)).concat(adxData.map(datum=>datum.value))),
-            padding:{top:10,bottom:10}
-        },{
-            height:110,
-            minValue:d3.min(candles.map(candle => candle.volume)),
-            maxValue:d3.max(candles.map(candle => candle.volume)),
-            padding:{top:10,bottom:10}
+            maxValue:d3.max(diPlusData.map(datum => datum.value).concat(diMinusData.map(datum => datum.value)).concat(adxData.map(datum=>datum.value)))
         }];
-
-// {
-//             height:100,
-//             minValue:d3.min(candles.map(candle => candle.volume)),
-//             maxValue:d3.max(candles.map(candle => candle.volume)),
-//             padding:{top:10,bottom:0}
-//         }
 
         const height = d3.sum(slabs.map(slab => slab.height));
 
@@ -80,27 +64,12 @@ $.getJSON('/api'+location.search).then(
         chart.plotValueAxis('price-axis',VALUE_AXIS_TICKS,0);
         chart.plotCandles(candles,'price-chart',0);
         
-        chart.plotValueAxis('atr-axis',5,1);
-        chart.plotCurve(atrData,'atr','blue',1);
-        
-        chart.plotValueAxis('di-axis',5,2);
-        chart.plotCurve(diPlusData,'diPlus','blue',2);
-        chart.plotCurve(diMinusData,'diMinus','red',2);
-        chart.plotCurve(adxData,'adx','black',2);
-        chart.plotCurve(adxData,'adx','black',2);
+        chart.plotValueAxis('di-axis',5,1);
+        chart.plotCurve(diPlusData,'diPlus','blue',1);
+        chart.plotCurve(diMinusData,'diMinus','red',1);
+        chart.plotCurve(adxData,'adx','black',1);
+        chart.plotCurve(adxData,'adx','black',1);
 
-        chart.plotValueAxis('volume-axis',5,3);
-        chart.plotBars(candles.map(candle => {
-            return {date:candle.date,value:candle.volume};
-        }),'volume-chart',3);
-
-        // chart.plotCurve(candles.map(candle => {
-        //     return {date:candle.date,value:candle.high};
-        // }),'high','red',0);
-
-        // chart.plotCurve(candles.map(candle => {
-        //     return {date:candle.date,value:candle.low};
-        // }),'low','blue',0);
 
         chart.onMouseMove(date => {
             const candle = candles.filter(candle => candle.date===date)[0];
@@ -109,10 +78,8 @@ $.getJSON('/api'+location.search).then(
                 ', LOW : '+candle.low+
                 ', CLOSE : '+candle.close;
             chart.plotInfo(ohlcText,'price-info',0);
-            chart.plotInfo('ATR : '+atrData.find(atrDatum => atrDatum.date==date).value,'atr-info',1);
             chart.plotInfo('ADX : '+adxData.find(datum=>datum.date==date).value+', +DI : '+diPlusData.find(datum => datum.date==date).value
-                +', -DI : '+diMinusData.find(datum => datum.date==date).value,'di-info',2);
-            chart.plotInfo('VOLUME : '+candle.volume,'volume-info',3);
+                +', -DI : '+diMinusData.find(datum => datum.date==date).value,'di-info',1);
         });
 
         chart.plotCrossHair();

@@ -2,6 +2,8 @@ import * as d3 from 'd3';
 
 import * as moment from 'moment';
 
+import {Point} from '../commons/models';
+
 interface ChartPadding{
     right:number;
     left:number;
@@ -48,8 +50,8 @@ export class Chart{
     private chartWidth:number;
     private padding:ChartPadding;
     private valueWidthFactor:number
-    private dateScale:d3.scale.Ordinal<string,number>;
-    private valueScales:d3.scale.Linear<number,number>[];
+    dateScale:d3.scale.Ordinal<string,number>;
+    valueScales:d3.scale.Linear<number,number>[];
     private translateValues:number[];
     private slabs:Slab[];
     private crossHair:d3.Selection<any>;
@@ -281,23 +283,21 @@ export class Chart{
             .style('stroke-dasharray',('3,3'));
     }
     
-
-    
-    // getPoint(date:string,value:number,slab:number){
-    //     return {
-    //         x:this.dateScale(date),
-    //         y:-this.valueScales[slab](value)
-    //     };
-    // }
-    
-    // getLine(point1:Point,point2:Point){
-    //     const slope = (point2.y - point1.y)/(point2.x - point1.x);
-    //     return {
-    //         slope,
-    //         intercept: point1.y - slope*point1.x
-    //     };
-    // }
-    
+    plotCrosses(points:Point[],className:string,color:string,slabIndex:number){
+        const {svg} = this;
+        svg.selectAll(className).remove();
+        const element = svg.append('g')
+            .attr('class',className)
+            .attr('transform','translate(0,'+this.translateValues[slabIndex]+')');
+        const crosses = element.selectAll('circle').data(points);
+        crosses.enter().append('circle');
+        crosses
+            .attr('cx',point => point.x)
+            .attr('cy',point => -point.y)
+            .attr('r',5)
+            .attr('stroke',color)
+            .attr('fill',color);
+    }
 
     
     

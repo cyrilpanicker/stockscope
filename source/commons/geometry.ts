@@ -1,9 +1,9 @@
 import {DateValue,Point,Line} from './models'
 import * as d3 from 'd3';
 
-import {getCandles} from '../server/services/quandl-service';
-import {diPlus,diMinus,adx} from './adx';
-import {ADX_SLAB,SVG_WIDTH,PADDING} from './constants';
+// import {getCandles} from '../server/services/quandl-service';
+// import {diPlus,diMinus,adx} from './adx';
+// import {ADX_SLAB,SVG_WIDTH,PADDING} from './constants';
 
 export const getPoint = (
     datum:DateValue,
@@ -34,6 +34,28 @@ export const getLineIntersection = (
     point.x = (line2.intercept - line1.intercept)/(line1.slope - line2.slope);
     point.y = (line2.slope*line1.intercept - line1.slope*line2.intercept)/(line2.slope - line1.slope);
     return point;
+};
+
+export const getCrosses = (
+    data1:DateValue[],
+    data2:DateValue[],
+    dateScale:d3.scale.Ordinal<string,number>,
+    valueScale:d3.scale.Linear<number,number>
+) => {
+    const result:Point[] = [];
+    for(let i=1;i<data1.length;i++){
+        const point11 = getPoint(data1[i-1],dateScale,valueScale);
+        const point12 = getPoint(data1[i],dateScale,valueScale);
+        const point21 = getPoint(data2[i-1],dateScale,valueScale);
+        const point22 = getPoint(data2[i],dateScale,valueScale);
+        const line1 = getLine(point11,point12);
+        const line2 = getLine(point21,point22);
+        const intersection = getLineIntersection(line1,line2);
+        if(point11.x < intersection.x && intersection.x <= point12.x){
+            result.push(intersection);
+        }
+    }
+    return result;
 };
 
 
@@ -70,6 +92,8 @@ export const getLineIntersection = (
         
 //         const intersection = getLineIntersection(line1,line2);
 //         console.log(intersection);
+        
+//         console.log(getCrosses(adxData.slice(-25),diPlusData.slice(-25),dateScale,valueScale));
 
 //     },
 //     error => {

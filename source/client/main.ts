@@ -15,6 +15,7 @@ import {
 
 import {atr} from '../commons/atr';
 import {diPlus,diMinus,adx} from '../commons/adx';
+import {getCrosses} from '../commons/geometry';
 
 $('body').addClass('loading');
 
@@ -65,9 +66,20 @@ $.getJSON('/api'+location.search).then(
         chart.plotCandles(candles,'price-chart',0);
         
         chart.plotValueAxis('di-axis',5,1);
-        chart.plotCurve(diPlusData,'diPlus','blue',1);
-        chart.plotCurve(diMinusData,'diMinus','red',1);
-        chart.plotCurve(adxData,'adx','black',1);
+        chart.plotCrosses(
+            getCrosses(adxData,diPlusData,chart.dateScale,chart.valueScales[1]),
+            'cross-diPlus',
+            '#6666FF',
+            1
+        );
+        chart.plotCrosses(
+            getCrosses(adxData,diMinusData,chart.dateScale,chart.valueScales[1]),
+            'cross-diMinus',
+            '#FF6666',
+            1
+        );
+        chart.plotCurve(diPlusData,'diPlus','#9999FF',1);
+        chart.plotCurve(diMinusData,'diMinus','#FF9999',1);
         chart.plotCurve(adxData,'adx','black',1);
 
 

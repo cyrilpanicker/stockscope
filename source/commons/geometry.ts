@@ -37,42 +37,42 @@ export const getLineIntersection = (
 };
 
 
-getCandles({stock:'RELIANCE',endDate:new Date()}).then(
-    (candles:any) => {
-        let diPlusData = diPlus(candles,14);
-        let diMinusData = diMinus(candles,14);
-        let adxData = adx(candles,14);
-        candles = candles.slice(-180);
-        diPlusData = diPlusData.slice(-180);
-        diMinusData = diMinusData.slice(-180);
-        adxData = adxData.slice(-180);
-        const valueScale = d3.scale.linear()
-            .domain([
-                d3.min(diPlusData.map(datum => datum.value).concat(diMinusData.map(datum => datum.value)).concat(adxData.map(datum=>datum.value))),
-                d3.max(diPlusData.map(datum => datum.value).concat(diMinusData.map(datum => datum.value)).concat(adxData.map(datum=>datum.value)))
-            ])
-            .range([ADX_SLAB.height - ADX_SLAB.padding.bottom, ADX_SLAB.padding.top]);
-        const dateScale = d3.scale.ordinal<string,number>()
-            .domain(adxData.map(datum=>datum.date))
-            .rangePoints([PADDING.left,SVG_WIDTH-PADDING.right]);
+// getCandles({stock:'RELIANCE',endDate:new Date()}).then(
+//     (candles:any) => {
+//         let diPlusData = diPlus(candles,14);
+//         let diMinusData = diMinus(candles,14);
+//         let adxData = adx(candles,14);
+//         candles = candles.slice(-180);
+//         diPlusData = diPlusData.slice(-180);
+//         diMinusData = diMinusData.slice(-180);
+//         adxData = adxData.slice(-180);
+//         const valueScale = d3.scale.linear()
+//             .domain([
+//                 d3.min(diPlusData.map(datum => datum.value).concat(diMinusData.map(datum => datum.value)).concat(adxData.map(datum=>datum.value))),
+//                 d3.max(diPlusData.map(datum => datum.value).concat(diMinusData.map(datum => datum.value)).concat(adxData.map(datum=>datum.value)))
+//             ])
+//             .range([ADX_SLAB.height - ADX_SLAB.padding.bottom, ADX_SLAB.padding.top]);
+//         const dateScale = d3.scale.ordinal<string,number>()
+//             .domain(adxData.map(datum=>datum.date))
+//             .rangePoints([PADDING.left,SVG_WIDTH-PADDING.right]);
             
-        const point1 = getPoint(adxData[adxData.length-3],dateScale,valueScale);
-        const point2 = getPoint(adxData[adxData.length-2],dateScale,valueScale);
-        const point3 = getPoint(adxData[adxData.length-1],dateScale,valueScale);
-        console.log(point1);
-        console.log(point2);
-        console.log(point3);
+//         const point1 = getPoint(adxData[adxData.length-3],dateScale,valueScale);
+//         const point2 = getPoint(adxData[adxData.length-2],dateScale,valueScale);
+//         const point3 = getPoint(adxData[adxData.length-1],dateScale,valueScale);
+//         console.log(point1);
+//         console.log(point2);
+//         console.log(point3);
         
-        const line1 = getLine(point1,point2);
-        const line2 = getLine(point2,point3);
-        console.log(line1);
-        console.log(line2);
+//         const line1 = getLine(point1,point2);
+//         const line2 = getLine(point2,point3);
+//         console.log(line1);
+//         console.log(line2);
         
-        const intersection = getLineIntersection(line1,line2);
-        console.log(intersection);
+//         const intersection = getLineIntersection(line1,line2);
+//         console.log(intersection);
 
-    },
-    error => {
-        console.log(error);
-    }
-);
+//     },
+//     error => {
+//         console.log(error);
+//     }
+// );

@@ -29,7 +29,7 @@ app.get('/api',(request,response) => {
     );
 });
 
-app.listen(PORT,error=>{
+app.listen(PORT,'0.0.0.0',error=>{
     if(error){
         functionalLogger.error(error);
     }else{

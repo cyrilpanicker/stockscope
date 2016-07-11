@@ -11,6 +11,10 @@ export const ADX_SLAB = {
     height:200,
     padding:{top:10,bottom:0}
 };
+export const ATR_SLAB = {
+    height:100,
+    padding:{top:10,bottom:0}
+};
 export const VOLUME_SLAB = {
     height:100,
     padding:{top:0,bottom:0}

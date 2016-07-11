@@ -10,7 +10,8 @@ import {
     SLAB_TYPES,
     VALUE_AXIS_TICKS,
     PRICE_SLAB,
-    ADX_SLAB
+    ADX_SLAB,
+    ATR_SLAB
 } from '../commons/constants';
 
 import {atr} from '../commons/atr';
@@ -46,6 +47,11 @@ $.getJSON('/api'+location.search).then(
             padding:ADX_SLAB.padding,
             minValue:d3.min(diPlusData.map(datum => datum.value).concat(diMinusData.map(datum => datum.value)).concat(adxData.map(datum=>datum.value))),
             maxValue:d3.max(diPlusData.map(datum => datum.value).concat(diMinusData.map(datum => datum.value)).concat(adxData.map(datum=>datum.value)))
+        },{
+            height:ATR_SLAB.height,
+            padding:ATR_SLAB.padding,
+            minValue:d3.min(atrData.map(datum=>datum.value)),
+            maxValue:d3.max(atrData.map(datum=>datum.value))
         }];
 
         const height = d3.sum(slabs.map(slab => slab.height));
@@ -81,6 +87,9 @@ $.getJSON('/api'+location.search).then(
         chart.plotCurve(diPlusData,'diPlus','#9999FF',1);
         chart.plotCurve(diMinusData,'diMinus','#FF9999',1);
         chart.plotCurve(adxData,'adx','black',1);
+        
+        chart.plotValueAxis('atr-axis',5,2);
+        chart.plotCurve(atrData,'atr-chart','red',2);
 
 
         chart.onMouseMove(date => {
@@ -92,6 +101,7 @@ $.getJSON('/api'+location.search).then(
             chart.plotInfo(ohlcText,'price-info',0);
             chart.plotInfo('ADX : '+adxData.find(datum=>datum.date==date).value+', +DI : '+diPlusData.find(datum => datum.date==date).value
                 +', -DI : '+diMinusData.find(datum => datum.date==date).value,'di-info',1);
+            chart.plotInfo('ATR : '+atrData.find(datum=>datum.date==date).value,'atr-info',2);
         });
 
         chart.plotCrossHair();
